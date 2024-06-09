@@ -1,0 +1,20 @@
+server:
+  port: 8888
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres_db:5432/yappi
+    username: root
+    password: root
+  jackson:
+    deserialization.accept-single-value-as-array: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      show_sql: true
+      ddl-auto: create-drop
+      cache.use.query_cache: false
+      cache.use_second_level_cache: false
+      jdbc.batch_size: 1000
+      order_inserts: true

@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  postgres_db:
+    image: "postgres:12"
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_DB: "yappi"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+    volumes:
+      - /home/badma/Документы/Hackaton/LCT_202406/db:/var/lib/postgresql/data
+
+
+#  ffmpeg:
+#    image: jrottenberg/ffmpeg
+#    #tty: true
+#    ports:
+#      - "29002:29000"
+#    tty: true
+#    entrypoint: "bash"
+#    depends_on:
+#     - yappi
+
+  yappi:
+
+    build: .
+    restart: always
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_DATASOURCE_URL_DB: jdbc:postgresql://postgres_db:5432/yappi
+      SPRING_DATASOURCE_USERNAME_DB: root
+      SPRING_DATASOURCE_PASSWORD_DB: root
+    volumes:
+      - type: bind
+        source: /home/badma/Документы/Hackaton/LCT_202406/yappy_hackaton_2024_400k.xlsx
+        target: /opt/yappy_hackaton_2024_400k.xlsx
+#    image: jrottenberg/ffmpeg
+#    volumes:
+#      - /home/badma/IdeaProjects/yappi/src/main/java/com/example/yappi/service/VideoToAudioConverter.java:/code
+#      - /home/badma/Документы/Hackaton:/videos
+    depends_on:
+      - postgres_db
+
+
+
+
+
