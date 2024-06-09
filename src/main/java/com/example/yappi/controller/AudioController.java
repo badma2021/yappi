@@ -27,7 +27,7 @@ public class AudioController {
     private final DownloadService downloadService;
     private final ExcelService csvService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AudioController.class);
+    private static final Logger log = LoggerFactory.getLogger(AudioController.class);
 
     @GetMapping("/processAudioTrack")
     public ResponseEntity<?> getTextFromAudio() throws IOException {
@@ -44,6 +44,13 @@ public class AudioController {
     @GetMapping("/downloadVideo")
     public ResponseEntity<?> getVideo() throws IOException {
       downloadService.downloadByUrl();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/updateHash")
+    public ResponseEntity<?> updateHash() throws IOException {
+        log.info("updateHash starts");
+        downloadService.updateHash();
+        log.info("updateHash finish");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

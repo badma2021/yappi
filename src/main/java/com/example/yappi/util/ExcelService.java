@@ -31,7 +31,7 @@ public class ExcelService {
     private final VideoReferenceRepository videoReferenceRepository;
 
     public void readExcel() throws IOException {
-        int batchSize = 10000;
+        int batchSize = 10;
         String excelFilePath = "/opt/yappy_hackaton_2024_400k.xlsx";
         int count = 0;
 
@@ -40,27 +40,34 @@ public class ExcelService {
         try (FileInputStream excelFile = new FileInputStream(new File(excelFilePath));) {
             XSSFWorkbook workbook = new XSSFWorkbook(excelFile);
             XSSFSheet worksheet = workbook.getSheetAt(0);
-            int len = worksheet.getPhysicalNumberOfRows() - 1;
+            Iterator<Row> rows = worksheet.iterator();
+            // int len = worksheet.getPhysicalNumberOfRows() - 1;
+            if (rows.hasNext()) {
+                rows.next();
+            }
+            //  log.info("len: {}", len);
+            while (rows.hasNext()) {
 
-            log.info("len: {}", len);
-            for (int index = 0; index < len; index++) {
-                if (index > 0) {
-                    log.info("index: {}", index);
-                    var vr = new VideoReference();
+                log.info("row");
+                var vr = new VideoReference();
 
-                    XSSFRow row = worksheet.getRow(index);
-                    Cell linkCell = row.getCell(0);
-                    Cell descriptionCell = row.getCell(1);
-                    String link = getCellValueAsString(linkCell);
-                    String description = getCellValueAsString(descriptionCell);
-                    vr.setLink(link);
-                    vr.setDescription(description);
-                    videoReferencesList.add(vr);
-                    count++;
-                    if (count % batchSize == 0) {
-                        videoReferenceRepository.saveAll(videoReferencesList);
-                        videoReferencesList.clear();
-                    }
+                Row row = rows.next();
+                Cell linkCell = row.getCell(0);
+
+                Cell descriptionCell = row.getCell(1);
+                String link = getCellValueAsString(linkCell);
+                log.info("excel link {}", link);
+                String description = getCellValueAsString(descriptionCell);
+                vr.setLink(link);
+                vr.setDescription(description);
+                videoReferencesList.add(vr);
+                count++;
+                if (count % batchSize == 0) {
+                    videoReferenceRepository.saveAll(videoReferencesList);
+                    videoReferencesList.clear();
+
+                } else if (!rows.hasNext() && count % batchSize > 0) {
+                    videoReferenceRepository.saveAll(videoReferencesList);
                 }
             }
         }

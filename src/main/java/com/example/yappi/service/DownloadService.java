@@ -19,6 +19,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
@@ -58,34 +61,38 @@ public class DownloadService {
 
     @Transactional
     public String updateHash() {
-        String fileLink = "";
+        // String fileLink = "";
 
-        try {
+        List<VideoReference> videoReferenceList = videoReferenceRepository.findEntitiesWithColumnNull();
+        for (VideoReference entity : videoReferenceList) {
+            String ref = entity.getLink();
+            log.info("ref {} ", ref);
+            try {
+                //String oppath = "/opt/fhd.mp4";
+                String oppath = "/opt/" + getFileName(ref);
+                URL link = new URL(ref);
+                InputStream ins = link.openStream();
+                ReadableByteChannel chh = Channels.newChannel(link.openStream());
+                FileOutputStream fos = new FileOutputStream(new File(oppath));
+                fos.getChannel().transferFrom(chh, 0, Long.MAX_VALUE);
+                fos.close();
+                chh.close();
+                String hash = md5HashService.toHashMd5(oppath);
+                videoReferenceRepository.updateHash(hash, entity.getId());
+                deleteFile(oppath);
+                log.info("finished {} with {}",entity.getId(), hash);
+                log.info("delete oppath {} ", oppath);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            log.info("ok");
 
-            String oppath = "/opt/fhd.mp4";
-            URL link = new URL(fileLink);
-            InputStream ins = link.openStream();
-            ReadableByteChannel chh = Channels.newChannel(link.openStream());
-            FileOutputStream fos = new FileOutputStream(new File(oppath));
-            fos.getChannel().transferFrom(chh, 0, Long.MAX_VALUE);
-            fos.close();
-            chh.close();
-            VideoReference videoReference = VideoReference.builder().
-                    hash(md5HashService.toHashMd5(oppath)).
-                    build();
-            videoReferenceRepository.save(videoReference);
-            deleteFile(oppath);
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
-        log.info("ok");
-
-
         return "ok";
     }
 
     private void deleteFile(String oppath) {
-
+        log.info("deleteFile starts");
         // create an object of Path
         Path pathOfFile
                 = Paths.get(oppath);
@@ -106,4 +113,22 @@ public class DownloadService {
             e.printStackTrace();
         }
     }
+
+
+    public String getFileName(String ref) {
+        log.info("getFileName starts");
+//        Pattern pattern = Pattern.compile("(.*)(?=/)");
+//
+//        Matcher matcher = pattern.matcher(ref);
+//        String result = null;
+//        if (matcher.find()) {
+//            result = matcher.group(1);
+//            System.out.println("Result: " + result);
+//        } else {
+//            System.out.println("No match found.");
+//        }
+        Path fileName = Paths.get(ref);
+        return fileName.getFileName().toString();
+    }
 }
+
