@@ -66,7 +66,7 @@ public class DownloadService {
         List<VideoReference> videoReferenceList = videoReferenceRepository.findEntitiesWithColumnNull();
         for (VideoReference entity : videoReferenceList) {
             String ref = entity.getLink();
-            log.info("ref {} ", ref);
+           // log.info("ref {} ", ref);
             try {
                 //String oppath = "/opt/fhd.mp4";
                 String oppath = "/opt/" + getFileName(ref);
@@ -85,7 +85,7 @@ public class DownloadService {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            log.info("ok");
+            //log.info("ok");
 
         }
         return "ok";
@@ -116,7 +116,7 @@ public class DownloadService {
 
 
     public String getFileName(String ref) {
-        log.info("getFileName starts");
+     //   log.info("getFileName starts");
 //        Pattern pattern = Pattern.compile("(.*)(?=/)");
 //
 //        Matcher matcher = pattern.matcher(ref);

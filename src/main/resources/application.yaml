@@ -10,7 +10,7 @@ spring:
     deserialization.accept-single-value-as-array: true
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       show_sql: true
       ddl-auto: create-drop
