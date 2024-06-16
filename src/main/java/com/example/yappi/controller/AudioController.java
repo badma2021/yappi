@@ -48,9 +48,9 @@ public class AudioController {
     }
     @GetMapping("/updateHash")
     public ResponseEntity<?> updateHash() throws IOException {
-        log.info("updateHash starts");
+       // log.info("updateHash starts");
         downloadService.updateHash();
-        log.info("updateHash finish");
+       // log.info("updateHash finish");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

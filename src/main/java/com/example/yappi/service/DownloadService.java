@@ -81,7 +81,7 @@ public class DownloadService {
                 videoReferenceRepository.updateHash(hash, entity.getId());
                 deleteFile(oppath);
                 log.info("finished {} with {}",entity.getId(), hash);
-                log.info("delete oppath {} ", oppath);
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -92,7 +92,7 @@ public class DownloadService {
     }
 
     private void deleteFile(String oppath) {
-        log.info("deleteFile starts");
+        //log.info("deleteFile starts");
         // create an object of Path
         Path pathOfFile
                 = Paths.get(oppath);
@@ -104,9 +104,9 @@ public class DownloadService {
                     = Files.deleteIfExists(pathOfFile);
 
             if (result)
-                System.out.println("File is deleted");
+                log.info("deleted oppath {} ", oppath);
             else
-                System.out.println("File does not exists");
+                log.info("was not deleted oppath {} ", oppath);
         } catch (IOException e) {
 
             // TODO Auto-generated catch block
